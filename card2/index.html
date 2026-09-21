@@ -19,9 +19,18 @@
 <script src="https://cdn.jsdelivr.net/npm/aframe@1.5.0/dist/aframe-master.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 <style>
-  html, body { margin:0; padding:0; height:100%; width:100%; background:#000; overflow:hidden; }
-  body { font:16px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif; color:#fff; }
-  a-scene { width:100%; height:100%; }
+  /* ВАЖНО: фон задаём ТОЛЬКО на html.
+     MindAR вставляет <video> с камерой в <body> с z-index:-2.
+     Если у body есть свой непрозрачный background — он рисуется ПОВЕРХ этого
+     видео (body не создаёт stacking context), и мы видим чёрный экран. */
+  html { margin:0; padding:0; height:100%; width:100%; background:#000; overflow:hidden; }
+  body { margin:0; padding:0; height:100%; width:100%; overflow:hidden;
+         background:transparent;
+         font:16px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif; color:#fff; }
+  a-scene { width:100%; height:100%; background:transparent !important; }
+  a-scene .a-canvas { background:transparent !important; }
+  /* видео камеры, которое создаёт MindAR (прямой потомок body) */
+  body > video { object-fit:cover; }
 
   /* ---------- экран загрузки ---------- */
   #boot {
@@ -39,7 +48,8 @@
   #scanning.hidden { display:none; }
   #scanning .frame {
     position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
-    width:58vw; height:calc(58vw * 1.414); max-height:62vh; max-width:calc(62vh / 1.414);
+    /* размер задаётся из JS по реальным пропорциям photo.jpg (см. fitFrame) */
+    width:58vw; height:calc(58vw * 1.414);
     border:3px solid rgba(255,255,255,.9); border-radius:10px;
     box-shadow:0 0 0 100vmax rgba(0,0,0,.35);
     animation:breathe 2s ease-in-out infinite;
@@ -121,7 +131,19 @@ var CFG = {
   fit    : 'cover',
 
   pauseWhenLost : true,      // пауза, когда фото ушло из кадра
-  cacheTarget   : true       // запоминать созданную метку в телефоне
+  cacheTarget   : true,      // запоминать созданную метку в телефоне
+
+  // --- распознавание под углом (фото лежит на столе) ---
+  camWidth  : 1920,          // просим у камеры высокое разрешение: под углом
+  camHeight : 1080,          // мелкие детали «схлопываются», и 640x480 не хватает
+  missTolerance   : 20,      // сколько кадров можно «не видеть» фото, не теряя его
+  warmupTolerance : 1,       // сколько кадров нужно, чтобы принять находку (меньше = быстрее ловит)
+  compileMaxWidth : 1600,    // разрешение метки при сборке в телефоне (было 1200)
+
+  // наклон видео относительно плоскости фотографии, в градусах.
+  // 0 = видео лежит ровно на фото (нормальный режим).
+  // -45 = видео «приподнимается» над лежащим на столе фото на 45°.
+  tiltDeg : 0
 };
 /* ===================================================================== */
 
@@ -139,6 +161,52 @@ var arScene = null;        // <a-scene> с дополненной реально
 var arVideo = null;        // <video> внутри AR-сцены
 var loud    = false;
 var started = false;
+
+/* ---------- 0a. Просим у камеры высокое разрешение ----------
+   MindAR запрашивает только facingMode:'environment' — браузер часто даёт
+   640x480. Этого хватает «в лоб», но не хватает под углом 30–50°.
+   Перехватываем запрос и добавляем желаемое разрешение + автофокус.     */
+(function upgradeCamera() {
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return;
+  var orig = navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
+  navigator.mediaDevices.getUserMedia = function (c) {
+    try {
+      if (c && c.video) {
+        var base = (c.video === true) ? {} : c.video;
+        c = Object.assign({}, c, { video: Object.assign({}, base, {
+          facingMode : { ideal: 'environment' },
+          width      : { ideal: CFG.camWidth  },
+          height     : { ideal: CFG.camHeight },
+          frameRate  : { ideal: 30 },
+          advanced   : [{ focusMode: 'continuous' }]
+        })});
+      }
+    } catch (e) {}
+    return orig(c).catch(function () {
+      // если телефон не умеет такое разрешение — откатываемся к простому запросу
+      return orig({ audio: false, video: { facingMode: 'environment' } });
+    });
+  };
+})();
+
+/* ---------- 0b. Рамка-подсказка по реальным пропорциям фотографии ---------- */
+function fitFrame(aspect) {           // aspect = высота / ширину фотографии
+  var f = document.querySelector('#scanning .frame');
+  var cap = document.querySelector('#scanning .cap');
+  function apply() {
+    var maxW = window.innerWidth  * (aspect >= 1 ? 0.62 : 0.88);
+    var maxH = window.innerHeight * (aspect >= 1 ? 0.66 : 0.60);
+    var w = maxW, h = w * aspect;
+    if (h > maxH) { h = maxH; w = h / aspect; }
+    f.style.width  = Math.round(w) + 'px';
+    f.style.height = Math.round(h) + 'px';
+  }
+  apply();
+  window.addEventListener('resize', apply);
+  window.addEventListener('orientationchange', function () { setTimeout(apply, 300); });
+  if (cap) cap.innerHTML = '📄 Наведите камеру на фотографию<br>(лист ' +
+    (aspect >= 1 ? 'вертикально' : 'горизонтально') + ', целиком в кадре)';
+}
 
 function progress(p, text) {
   bar.style.width = Math.max(0, Math.min(100, p)) + '%';
@@ -196,7 +264,7 @@ function cacheSet(key, buffer) {
 function compile(img) {
   progress(5, 'Первый запуск: изучаем фотографию… Это 15–40 секунд, не закрывайте страницу.');
   // уменьшаем большое фото — так быстрее, а распознаётся так же
-  var maxW = 1200;
+  var maxW = CFG.compileMaxWidth || 1200;
   var k = Math.min(1, maxW / img.naturalWidth);
   var src = document.createElement('canvas');
   src.width  = Math.round(img.naturalWidth  * k);
@@ -216,14 +284,17 @@ function startAR(targetUrl, photoAspect) {
   var scene = document.createElement('a-scene');
   scene.setAttribute('embedded', '');
   scene.setAttribute('color-space', 'sRGB');
-  scene.setAttribute('renderer', 'colorManagement: true, physicallyCorrectLights: true');
+  // в A-Frame свойства компонента разделяются ТОЧКОЙ С ЗАПЯТОЙ, а не запятой
+  scene.setAttribute('renderer', 'colorManagement: true; physicallyCorrectLights: true; alpha: true');
   scene.setAttribute('vr-mode-ui', 'enabled: false');
   scene.setAttribute('device-orientation-permission-ui', 'enabled: false');
   scene.setAttribute('mindar-image',
     'imageTargetSrc: ' + targetUrl +
+    '; maxTrack: 1' +
     '; uiScanning: #scanning; uiLoading: no; uiError: no' +
     '; filterMinCF: 0.0001; filterBeta: 0.005' +
-    '; missTolerance: 8; warmupTolerance: 2');
+    '; missTolerance: ' + CFG.missTolerance +
+    '; warmupTolerance: ' + CFG.warmupTolerance);
 
   scene.innerHTML =
     '<a-assets>' +
@@ -232,8 +303,13 @@ function startAR(targetUrl, photoAspect) {
     '</a-assets>' +
     '<a-camera position="0 0 0" look-controls="enabled: false" cursor="fuse: false"></a-camera>' +
     '<a-entity id="anchor" mindar-image-target="targetIndex: 0">' +
-      '<a-video id="screen" src="#arvid" width="1" height="' + photoAspect.toFixed(4) + '" ' +
-               'position="0 0 0" rotation="0 0 0"></a-video>' +
+      // наклон происходит вокруг НИЖНЕГО края фотографии
+      '<a-entity id="tilt" position="0 ' + ((CFG.tiltDeg ? -photoAspect / 2 : 0).toFixed(4)) +
+               ' 0" rotation="' + (CFG.tiltDeg || 0) + ' 0 0">' +
+        '<a-video id="screen" src="#arvid" width="1" height="' + photoAspect.toFixed(4) + '" ' +
+                 'position="0 ' + ((CFG.tiltDeg ? photoAspect / 2 : 0).toFixed(4)) + ' 0" ' +
+                 'rotation="0 0 0"></a-video>' +
+      '</a-entity>' +
     '</a-entity>';
 
   document.body.appendChild(scene);
@@ -371,6 +447,7 @@ function showError(text) {
     }
     // высота листа относительно ширины: A4 вертикально = 1.414, A4 горизонтально = 0.707
     var aspect = img.naturalHeight / img.naturalWidth;
+    fitFrame(aspect);          // рамка-подсказка принимает форму реальной фотографии
 
     return fetchTarget().then(function (url) {
       if (url) return { url: url, aspect: aspect };
