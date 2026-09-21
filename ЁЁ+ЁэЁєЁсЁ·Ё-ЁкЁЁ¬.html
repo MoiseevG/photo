@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Инструкция — Живое фото по QR-коду</title>
+<style>
+  :root { --accent:#5b5ff0; --ok:#12855b; --warn:#c9770a; --danger:#c02b2b; }
+  * { box-sizing: border-box; }
+  body {
+    margin:0; background:#f5f6fb; color:#1b1d29;
+    font:17px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+    padding:0 0 80px;
+  }
+  header {
+    background:linear-gradient(135deg,#5b5ff0,#8a5cf6); color:#fff;
+    padding:44px 20px 40px; text-align:center;
+  }
+  header h1 { margin:0 0 8px; font-size:30px; }
+  header p { margin:0; opacity:.92; font-size:18px; }
+  main { max-width:820px; margin:0 auto; padding:0 20px; }
+  .intro {
+    background:#fff; border-radius:16px; padding:22px 24px; margin:-28px 0 30px;
+    box-shadow:0 8px 30px rgba(30,30,80,.08);
+  }
+  h2 { font-size:15px; letter-spacing:.04em; text-transform:uppercase; color:#7a7fa6; margin:36px 0 14px; }
+  .step {
+    background:#fff; border-radius:16px; padding:22px 24px 20px 74px; position:relative;
+    box-shadow:0 6px 20px rgba(30,30,80,.06); margin-bottom:18px;
+  }
+  .step .num {
+    position:absolute; left:20px; top:22px; width:38px; height:38px; border-radius:50%;
+    background:var(--accent); color:#fff; font-weight:700; font-size:19px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .step h3 { margin:2px 0 10px; font-size:20px; }
+  .step ul, .step ol { margin:10px 0; padding-left:22px; }
+  .step li { margin:6px 0; }
+  kbd {
+    background:#eef0fb; border:1px solid #d3d7ee; border-bottom-width:2px; border-radius:6px;
+    padding:1px 7px; font:600 14px/1 "Segoe UI",Roboto,Arial,sans-serif; color:#3a3f74; white-space:nowrap;
+  }
+  .path { background:#f0f2fb; border-radius:6px; padding:1px 6px; font-family:Consolas,"Courier New",monospace; font-size:15px; }
+  .callout { border-radius:12px; padding:14px 16px 14px 46px; position:relative; margin:14px 0; font-size:16px; }
+  .callout::before { position:absolute; left:16px; top:13px; font-size:20px; }
+  .warn   { background:#fff6e9; border:1px solid #f2d9a8; } .warn::before   { content:"⚠️"; }
+  .danger { background:#fdeaea; border:1px solid #f0bcbc; } .danger::before { content:"⛔"; }
+  .ok     { background:#e9f7f0; border:1px solid #b6e3cd; } .ok::before     { content:"✅"; }
+  .tip    { background:#eef1ff; border:1px solid #cdd4f7; } .tip::before    { content:"💡"; }
+  table { width:100%; border-collapse:collapse; background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 6px 20px rgba(30,30,80,.06); }
+  th,td { text-align:left; padding:12px 14px; border-bottom:1px solid #eceef7; vertical-align:top; }
+  th { background:#f0f2fb; font-size:14px; text-transform:uppercase; letter-spacing:.03em; color:#5a5f88; }
+  tr:last-child td { border-bottom:0; }
+  .big-emoji { font-size:22px; }
+  code.file { background:#111428; color:#8affc1; border-radius:6px; padding:2px 8px; font-family:Consolas,monospace; font-size:15px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>📸 Живое фото по QR-коду</h1>
+  <p>Наводишь камеру на QR — открывается фото и само играет видео</p>
+</header>
+
+<main>
+  <div class="intro">
+    <b>Что это.</b> Вы бесплатно выкладываете в интернет страничку с вашим фото и видео.
+    Для неё получается QR-код. Кто угодно наводит камеру телефона на этот QR — открывается
+    фотография, и сразу начинает проигрываться видео (со звуком — после касания экрана).
+    Ровно как в школьных фотоальбомах.
+    <div class="callout ok" style="margin-bottom:0">
+      Программировать и знать Git <b>не нужно</b>. Всё делается мышкой в браузере.
+      Понадобится примерно <b>15 минут</b> и бесплатный аккаунт на сайте GitHub.
+    </div>
+  </div>
+
+  <h2>Что понадобится</h2>
+  <div class="step" style="padding-left:24px">
+    <ul style="margin:0">
+      <li>📧 Электронная почта (для регистрации на GitHub).</li>
+      <li>🖼️ Ваше <b>фото</b> и короткое <b>видео</b> (см. Шаг&nbsp;0, как их подготовить).</li>
+      <li>💻 Компьютер с браузером <b>Google&nbsp;Chrome</b> или <b>Microsoft&nbsp;Edge</b>
+          (в них правильно загружаются папки).</li>
+    </ul>
+  </div>
+
+  <!-- ШАГ 0 -->
+  <h2>Пошаговая инструкция</h2>
+  <div class="step">
+    <div class="num">0</div>
+    <h3>Подготовьте фото и видео</h3>
+    <p>Это самый важный шаг. Файлы должны называться <b>ровно так</b> (маленькими буквами):</p>
+    <ul>
+      <li>фотография → <code class="file">photo.jpg</code></li>
+      <li>видео → <code class="file">video.mp4</code></li>
+    </ul>
+    <div class="callout warn">
+      <b>Видео должно быть меньше 25 МБ.</b> Это ограничение загрузки файла через сайт GitHub.
+      Если видео тяжелее — сделайте его короче (несколько секунд) или сожмите
+      (бесплатные сайты-сжиматели видео, или сохраните в качестве 720p).
+    </div>
+    <div class="callout tip">
+      <b>Айфон.</b> Фото часто сохраняются в формате <b>HEIC</b>, а видео — в <b>.MOV</b>.
+      Браузеры их плохо понимают. Проще всего: для фото — сделайте <b>скриншот</b> фотографии
+      (скриншот сохраняется как PNG/JPG), для видео — при экспорте выберите MP4, либо
+      воспользуйтесь любым бесплатным конвертером «HEIC в JPG» / «MOV в MP4».
+    </div>
+    <div class="callout tip">
+      <b>Windows: включите показ расширений.</b> В Проводнике вверху вкладка <kbd>Вид</kbd> →
+      поставьте галочку <kbd>Расширения имён файлов</kbd>. Тогда при переименовании вы не
+      получите случайно <span class="path">photo.jpg.jpg</span>.
+    </div>
+    <p>Положите <code class="file">photo.jpg</code> и <code class="file">video.mp4</code>
+       внутрь папки <span class="path">card1</span> (рядом с файлом
+       <span class="path">index.html</span>), заменив демонстрационные. Так же можно
+       заполнить <span class="path">card2</span> и <span class="path">card3</span>.</p>
+  </div>
+
+  <!-- ШАГ 1 -->
+  <div class="step">
+    <div class="num">1</div>
+    <h3>Заведите бесплатный аккаунт на GitHub</h3>
+    <ol>
+      <li>Откройте сайт <b>github.com</b>.</li>
+      <li>Нажмите <kbd>Sign up</kbd> (Регистрация) в правом верхнем углу.</li>
+      <li>Введите почту, придумайте пароль и имя пользователя (латиницей, например
+          <span class="path">anna-foto</span>).</li>
+      <li>Подтвердите почту по письму — и всё, аккаунт готов.</li>
+    </ol>
+    <div class="callout tip">Запомните <b>имя пользователя</b> — оно попадёт в адрес вашего сайта.</div>
+  </div>
+
+  <!-- ШАГ 2 -->
+  <div class="step">
+    <div class="num">2</div>
+    <h3>Создайте репозиторий (это «папка» вашего сайта)</h3>
+    <ol>
+      <li>Нажмите <kbd>+</kbd> в правом верхнем углу → <kbd>New repository</kbd>.</li>
+      <li>В поле <b>Repository name</b> впишите название латиницей без пробелов, например
+          <span class="path">jivye-foto</span>.</li>
+      <li>Ниже выберите <b>Public</b> (обязательно — бесплатный сайт работает только у публичных).</li>
+      <li>Больше ничего не трогайте — нажмите зелёную кнопку <kbd>Create repository</kbd>.</li>
+    </ol>
+    <div class="callout danger">
+      Обязательно <b>Public</b> (публичный). У приватного репозитория бесплатная страница не откроется.
+    </div>
+  </div>
+
+  <!-- ШАГ 3 -->
+  <div class="step">
+    <div class="num">3</div>
+    <h3>Загрузите файлы (перетаскиванием)</h3>
+    <ol>
+      <li>На странице нового репозитория нажмите <kbd>Add file</kbd> → <kbd>Upload files</kbd>
+          (или синюю ссылку <i>uploading an existing file</i>).</li>
+      <li>На компьютере откройте папку <span class="path">smth_new</span>.</li>
+      <li>Выделите <b>всё, что внутри</b> неё (<kbd>Ctrl</kbd>+<kbd>A</kbd>): папки
+          <span class="path">card1</span>, <span class="path">card2</span>,
+          <span class="path">card3</span>, файлы <span class="path">index.html</span>,
+          <span class="path">qr.html</span>, <span class="path">.nojekyll</span> и остальные.</li>
+      <li>Перетащите их мышкой в окно браузера, в область загрузки.</li>
+      <li>Дождитесь, пока всё загрузится, прокрутите вниз и нажмите зелёную
+          <kbd>Commit changes</kbd>.</li>
+    </ol>
+    <div class="callout warn">
+      Перетаскивайте именно в браузере <b>Chrome</b> или <b>Edge</b> — они умеют загружать
+      папки целиком. Убедитесь, что файл <span class="path">.nojekyll</span> тоже попал в список.
+    </div>
+  </div>
+
+  <!-- ШАГ 4 -->
+  <div class="step">
+    <div class="num">4</div>
+    <h3>Включите бесплатный сайт (GitHub Pages)</h3>
+    <ol>
+      <li>Вверху страницы репозитория откройте вкладку <kbd>Settings</kbd>.</li>
+      <li>В левом меню выберите <kbd>Pages</kbd>.</li>
+      <li>В разделе <b>Build and deployment → Source</b> должно стоять
+          <kbd>Deploy from a branch</kbd>.</li>
+      <li>Ниже в <b>Branch</b> выберите <kbd>main</kbd>, папку оставьте
+          <kbd>/ (root)</kbd> и нажмите <kbd>Save</kbd>.</li>
+      <li>Подождите 1–2 минуты и обновите страницу — вверху появится надпись
+          <i>«Your site is live at …»</i> с адресом вашего сайта.</li>
+    </ol>
+  </div>
+
+  <!-- ШАГ 5 -->
+  <div class="step">
+    <div class="num">5</div>
+    <h3>Узнайте адрес сайта</h3>
+    <p>Адрес выглядит так:</p>
+    <p class="path">https://<b>ИМЯ</b>.github.io/<b>НАЗВАНИЕ-РЕПОЗИТОРИЯ</b>/</p>
+    <p>Например: <span class="path">https://anna-foto.github.io/jivye-foto/</span>.
+       А адрес первой карточки — просто добавьте <span class="path">card1/</span> в конце:</p>
+    <p class="path">https://anna-foto.github.io/jivye-foto/<b>card1/</b></p>
+    <div class="callout tip">Проверьте: откройте этот адрес в браузере — должно показаться фото.</div>
+  </div>
+
+  <!-- ШАГ 6 -->
+  <div class="step">
+    <div class="num">6</div>
+    <h3>Сделайте QR-код и распечатайте</h3>
+    <ol>
+      <li>Откройте страницу-генератор: к адресу сайта добавьте <span class="path">qr.html</span>,
+          например <span class="path">https://anna-foto.github.io/jivye-foto/qr.html</span>.
+          (Можно и просто дважды кликнуть по файлу <span class="path">qr.html</span> на компьютере.)</li>
+      <li>Вставьте адрес карточки (тот, что заканчивается на <span class="path">card1/</span>).</li>
+      <li>Нажмите <kbd>Показать QR-код</kbd>.</li>
+      <li>Нажмите <kbd>⬇️ Скачать картинку</kbd> или <kbd>🖨️ Печать</kbd>.</li>
+    </ol>
+    <div class="callout tip">Для каждой карточки (card1, card2, card3…) делается свой отдельный QR-код.</div>
+  </div>
+
+  <!-- ШАГ 7 -->
+  <div class="step">
+    <div class="num">7</div>
+    <h3>Проверьте телефоном</h3>
+    <ol>
+      <li>Откройте на телефоне <b>камеру</b> и наведите на QR-код.</li>
+      <li>Нажмите на всплывшую ссылку — откроется страница с фотографией.</li>
+      <li>Видео начнёт проигрываться само (без звука).</li>
+      <li><b>Коснитесь экрана</b> — включится звук и видео развернётся на весь экран.</li>
+    </ol>
+    <div class="callout ok" style="margin-bottom:0">Готово! Это можно распечатать и подарить. 🎉</div>
+  </div>
+
+  <!-- ШАГ 8 -->
+  <div class="step">
+    <div class="num">8</div>
+    <h3>Как добавить ещё одну карточку</h3>
+    <ol>
+      <li>На компьютере скопируйте папку <span class="path">_shablon_kartochki</span> и
+          переименуйте копию, например в <span class="path">card4</span>.</li>
+      <li>Положите внутрь свои <code class="file">photo.jpg</code> и <code class="file">video.mp4</code>.</li>
+      <li>Загрузите папку <span class="path">card4</span> в репозиторий тем же способом
+          (Шаг 3), нажмите <kbd>Commit changes</kbd>.</li>
+      <li>Сделайте для неё новый QR-код на адрес
+          <span class="path">…/card4/</span> (Шаг 6).</li>
+    </ol>
+    <div class="callout tip">
+      Заменить фото/видео в существующей карточке — так же: загрузите новый файл с тем же
+      именем (<code class="file">photo.jpg</code> или <code class="file">video.mp4</code>) в ту же
+      папку — он заменит старый.
+    </div>
+  </div>
+
+  <!-- Проблемы -->
+  <h2>Если что-то не так</h2>
+  <table>
+    <tr><th>Что видно</th><th>Что делать</th></tr>
+    <tr>
+      <td>Белый экран или «404»</td>
+      <td>Подождите 1–2 минуты после Шага&nbsp;4 и обновите. Проверьте, что репозиторий
+          <b>Public</b> и в <b>Settings → Pages</b> выбрана ветка <b>main</b>.</td>
+    </tr>
+    <tr>
+      <td>Видео не проигрывается</td>
+      <td>Файл должен называться ровно <code class="file">video.mp4</code>, быть форматом
+          <b>MP4</b> и весить <b>меньше 25 МБ</b>.</td>
+    </tr>
+    <tr>
+      <td>Нет звука сразу</td>
+      <td>Так и должно быть — телефоны запускают видео без звука.
+          <b>Коснитесь экрана</b>, и звук включится.</td>
+    </tr>
+    <tr>
+      <td>Фото не отображается</td>
+      <td>Файл должен называться ровно <code class="file">photo.jpg</code> и быть форматом
+          <b>JPG</b>. Фото с айфона (HEIC) — пересохраните в JPG (или сделайте скриншот).</td>
+    </tr>
+    <tr>
+      <td>При загрузке файл «слишком большой»</td>
+      <td>Видео тяжелее 25 МБ. Сделайте короче или сожмите.</td>
+    </tr>
+    <tr>
+      <td>Папки загрузились «плоско», без вложенных</td>
+      <td>Загружайте через <b>Chrome</b> или <b>Edge</b> и перетаскивайте <b>папки</b>
+          card1/card2 целиком.</td>
+    </tr>
+  </table>
+
+  <h2>Частые вопросы</h2>
+  <div class="step" style="padding-left:24px">
+    <p style="margin:0 0 12px"><b>Это бесплатно?</b> Да, полностью. Домен и хостинг не нужны.</p>
+    <p style="margin:0 0 12px"><b>Сколько это работает?</b> Пока существует ваш репозиторий на GitHub.</p>
+    <p style="margin:0"><b>Можно менять фото/видео потом?</b> Да, в любой момент — просто
+       загрузите новые файлы с теми же именами.</p>
+  </div>
+</main>
+</body>
+</html>

@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Создание targets.mind</title>
+<script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image.prod.js"></script>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#10121b;color:#f4f5fb;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;padding:28px 18px}.wrap{max-width:760px;margin:auto}h1{margin:0 0 10px;font-size:28px}.lead{color:#aeb3c7;line-height:1.55}.card{background:#191c28;border:1px solid #303549;border-radius:16px;padding:18px;margin-top:18px}.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.slot{font-weight:700;min-width:110px}.file{flex:1;min-width:240px}button{border:0;border-radius:12px;padding:13px 18px;background:#625cff;color:#fff;font-weight:700;cursor:pointer}button:disabled{opacity:.5}.progress{height:8px;background:#2b3040;border-radius:99px;overflow:hidden;margin-top:16px}.bar{height:100%;width:0;background:#fff;transition:width .15s}.status{margin-top:12px;color:#bfc4d6;line-height:1.5}.ok{color:#8fe3a6}.warn{color:#ffd37b}.preview{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px}.preview img{width:110px;height:156px;object-fit:cover;border-radius:8px;border:1px solid #3a4053}.small{font-size:13px;color:#8f95aa;line-height:1.5}a{color:#9da9ff}</style>
+</head>
+<body><main class="wrap">
+<h1>Создание targets.mind для A4-фото</h1>
+<p class="lead">MindAR сначала анализирует фотографию и создаёт файл <b>targets.mind</b>. Загрузите одну фотографию для каждой карточки, затем скачайте файл и положите его в соответствующую папку.</p>
+<div class="card">
+<div class="row"><div class="slot">Карточка 1</div><input class="file" id="f1" type="file" accept="image/jpeg,image/png"></div>
+<div class="row" style="margin-top:12px"><div class="slot">Карточка 2</div><input class="file" id="f2" type="file" accept="image/jpeg,image/png"></div>
+<div class="row" style="margin-top:12px"><div class="slot">Карточка 3</div><input class="file" id="f3" type="file" accept="image/jpeg,image/png"></div>
+<p class="small">Фото для печати: вертикальный A4, 210×297 мм, соотношение 1:1.414. Лучше использовать резкую фотографию с большим количеством деталей и контрастных элементов.</p>
+<button id="start">Скомпилировать выбранные фото</button><div class="progress"><div class="bar" id="bar"></div></div><div class="status" id="status">Файлы ещё не выбраны.</div><div class="preview" id="preview"></div>
+</div>
+<div class="card"><b>Куда положить результат</b><p class="small">Если компилировали одно фото — скачанный файл назовите <code>targets.mind</code> и положите в нужную папку: <code>card1/</code>, <code>card2/</code> или <code>card3/</code>. В каждой папке должен быть свой targets.mind.</p></div>
+<script>
+const statusEl=document.getElementById('status'),bar=document.getElementById('bar'),preview=document.getElementById('preview'),start=document.getElementById('start');
+function loadImage(file){return new Promise((resolve,reject)=>{const img=new Image();img.onload=()=>{URL.revokeObjectURL(img.src);resolve(img)};img.onerror=reject;img.src=URL.createObjectURL(file)})}
+for(const id of ['f1','f2','f3']) document.getElementById(id).addEventListener('change',e=>{for(const f of e.target.files){const img=document.createElement('img');img.src=URL.createObjectURL(f);preview.appendChild(img)}});
+start.addEventListener('click',async()=>{
+ const files=[...document.querySelectorAll('.file')].map((el,i)=>({file:el.files[0],name:'card'+(i+1)})).filter(x=>x.file);
+ if(files.length>1){statusEl.innerHTML='<span class="warn">Выберите только одну фотографию за один раз — для каждой карточки нужен отдельный targets.mind.</span>';return}
+ if(!files.length){statusEl.innerHTML='<span class="warn">Выберите хотя бы одну фотографию.</span>';return}
+ start.disabled=true;bar.style.width='0%';
+ try{
+  const compiler=new MINDAR.IMAGE.Compiler();
+  const images=[];
+  for(let i=0;i<files.length;i++){statusEl.textContent=`Подготовка фото ${i+1} из ${files.length}…`;images.push(await loadImage(files[i].file))}
+  statusEl.textContent='MindAR анализирует изображения…';
+  const data=await compiler.compileImageTargets(images,p=>{bar.style.width=Math.round(p)+'%';statusEl.textContent=`Анализ изображений: ${Math.round(p)}%`});
+  const buffer=await compiler.exportData();
+  const blob=new Blob([buffer],{type:'application/octet-stream'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='targets.mind';a.textContent='Скачать targets.mind';a.style.display='inline-block';a.style.marginTop='12px';a.style.fontWeight='700';statusEl.innerHTML='<span class="ok">Готово. В этом targets.mind targets идут в порядке выбранных файлов.</span><br>Для текущего проекта удобнее компилировать одну фотографию за раз, чтобы в каждой папке был свой targets.mind.';statusEl.appendChild(document.createElement('br'));statusEl.appendChild(a);
+ }catch(err){console.error(err);statusEl.innerHTML='<span class="warn">Не удалось скомпилировать. Проверьте, что страница открыта через HTTPS/localhost и выбран JPG/PNG.</span>'}finally{start.disabled=false}
+});
+</script></main></body></html>

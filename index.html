@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Живые фото</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: #0f1020; color: #f3f4ff; min-height: 100vh;
+    font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    padding: 40px 20px 60px;
+  }
+  .wrap { max-width: 900px; margin: 0 auto; }
+  h1 { font-size: 30px; margin: 0 0 6px; }
+  .lead { color: #a9adce; margin: 0 0 30px; }
+  .grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 18px; margin-bottom: 34px;
+  }
+  .tile {
+    display: block; text-decoration: none; color: inherit; background: #1a1c33;
+    border-radius: 16px; overflow: hidden; border: 1px solid #2a2d4d;
+    transition: transform .12s ease, border-color .12s ease;
+  }
+  .tile:hover { transform: translateY(-3px); border-color: #5b5ff0; }
+  .tile .thumb { aspect-ratio: 210 / 297; background: #000 center/cover no-repeat; }
+  .tile .cap { padding: 12px 14px; font-weight: 600; }
+  .tile .cap small { display: block; color: #8b8fb5; font-weight: 400; }
+  .actions { display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn {
+    text-decoration: none; font-weight: 600; padding: 14px 20px; border-radius: 12px;
+    display: inline-block;
+  }
+  .btn-primary { background: #5b5ff0; color: #fff; }
+  .btn-ghost   { background: #23264a; color: #cfd2ff; }
+  footer { margin-top: 40px; color: #6d719a; font-size: 14px; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>📸 Живые фото</h1>
+    <p class="lead">Наведите камеру телефона на QR-код, а затем — на распечатанное фото формата A4.
+       Видео заиграет прямо на фотографии и будет поворачиваться вместе с телефоном.</p>
+
+    <div class="grid">
+      <a class="tile" href="card1/">
+        <div class="thumb" style="background-image:url('card1/photo.jpg')"></div>
+        <div class="cap">Карточка 1 <small>card1/</small></div>
+      </a>
+      <a class="tile" href="card2/">
+        <div class="thumb" style="background-image:url('card2/photo.jpg')"></div>
+        <div class="cap">Карточка 2 <small>card2/</small></div>
+      </a>
+      <a class="tile" href="card3/">
+        <div class="thumb" style="background-image:url('card3/photo.jpg')"></div>
+        <div class="cap">Карточка 3 <small>card3/</small></div>
+      </a>
+    </div>
+
+    <div class="actions">
+      <a class="btn btn-primary" href="qr.html">🔳 Сделать QR-код</a>
+      <a class="btn btn-ghost" href="compile.html">🖨️ Фото A4 + метка AR</a>
+      <a class="btn btn-ghost" href="%D0%98%D0%9D%D0%A1%D0%A2%D0%A0%D0%A3%D0%9A%D0%A6%D0%98%D0%AF.html">📖 Инструкция</a>
+    </div>
+
+    <footer>
+      Для дополненной реальности нужен адрес, который начинается с https:// — такой даёт
+      GitHub Pages. Чтобы добавить свою карточку в этот список — необязательно:
+      достаточно сделать для неё отдельный QR-код на странице «Сделать QR-код».
+    </footer>
+  </div>
+</body>
+</html>
